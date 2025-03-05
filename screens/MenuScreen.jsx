@@ -9,6 +9,7 @@ import {
 import React, {useEffect, useState} from 'react';
 import {useRoute} from '@react-navigation/native';
 import axios from 'axios';
+import { HOST_IP } from '../secrets';
 
 const MenuScreen = () => {
   const route = useRoute();
@@ -33,7 +34,7 @@ const MenuScreen = () => {
     };
 
     const response = await axios.post(
-      'http://localhost:3000/menu/addDish',
+      `http://${HOST_IP}:3000/menu/addDish`,
       dish,
     );
     console.log("dish added",response)

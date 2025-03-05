@@ -13,6 +13,7 @@ import axios from 'axios';
 import {BottomModal} from 'react-native-modals';
 import {SlideAnimation} from 'react-native-modals';
 import {ModalContent} from 'react-native-modals';
+import { HOST_IP } from '../secrets';
 
 const HomeScreen = () => {
   const currentDate = moment();
@@ -34,7 +35,7 @@ const HomeScreen = () => {
 
   const fetchAllMenuData = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/menu/all');
+      const response = await axios.get(`http://${HOST_IP}:3000/menu/all`);
       setMenuData(response.data);
     } catch (error) {
       console.log('Error', error);
@@ -45,7 +46,7 @@ const HomeScreen = () => {
     try {
       const dateToDelete = selectedDate;
       const response = await axios.delete(
-        `http://localhost:3000/deleteItems/${dateToDelete}`,
+        `http://${HOST_IP}:3000/deleteItems/${dateToDelete}`,
       );
 
       if (response.status == 200) {
@@ -62,7 +63,7 @@ const HomeScreen = () => {
   const copyItems = async () => {
     const formattedPrevDate = date;
     const formattedNextDate = nextDate;
-    const response = await axios.post('http://localhost:3000/copyItems', {
+    const response = await axios.post(`http://${HOST_IP}:3000/copyItems`, {
       prevDate: formattedPrevDate,
       nextDate: formattedNextDate,
     });
