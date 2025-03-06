@@ -1,14 +1,14 @@
+import React from 'react';
+import {ModalPortal} from 'react-native-modals';
+import StackNavigator from './navigation/StackNavigator';
 
-
-
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import StackNavigator from './navigation/StackNavigator'
-
-const App = () => {
+const App: React.FC = () => {
   return (
-    <StackNavigator />
-  )
-}
+    <>
+      <StackNavigator />
+      <ModalPortal />
+    </>
+  );
+};
 
-export default App
+export default App;
