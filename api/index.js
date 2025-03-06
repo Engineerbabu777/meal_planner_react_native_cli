@@ -7,6 +7,7 @@ const port = 3000;
 
 require('dotenv').config();
 const cors = require('cors');
+const Menu = require('./models/menu.model');
 app.use(cors());
 
 app.use(bodyParser.urlencoded({extended: false}));
@@ -23,4 +24,23 @@ app.listen(port, () => {
     });
 
   console.log('Server is running on port 3000');
+});
+
+app.post('/menu/addDish', async (req, res) => {
+  try {
+    const {date, name, type, mealType} = req.body;
+
+    let menuItem = await Menu.findOne({date});
+
+    if (!menuItem) {
+      menuItem = new Menu({date});
+    }
+
+    menuItem.items.push({name, type, mealType});
+
+    await menuItem.save();
+  } catch (error) {
+    console.log('Error', error);
+    res.status(500).json({message: 'Internal server error'});
+  }
 });
