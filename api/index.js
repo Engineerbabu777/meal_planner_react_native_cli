@@ -44,3 +44,17 @@ app.post('/menu/addDish', async (req, res) => {
     res.status(500).json({message: 'Internal server error'});
   }
 });
+
+app.get('/menu/all', async (req, res) => {
+  try {
+    const allMenuData = await Menu.find({});
+
+    if (!allMenuData || allMenuData.length === 0) {
+      return res.status(200).json([]);
+    }
+
+    res.status(200).json(allMenuData);
+  } catch (error) {
+    res.status(500).json({error: 'Internal server error'});
+  }
+});
