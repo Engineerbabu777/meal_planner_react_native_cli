@@ -82,3 +82,18 @@ app.post('/copyItems', async (req, res) => {
     res.status(500).json({message: 'Internal server error'});
   }
 });
+
+app.delete('/deleteItems/:date', async (req, res) => {
+  const dateToDelete = req.params.date;
+
+  try {
+    const deletedItem = await Menu.findOneAndDelete({date: dateToDelete});
+    if (deletedItem) {
+      res.status(200).json({message: 'Item deleted'});
+    } else {
+      res.status(404).json({message: 'error deleting the items'});
+    }
+  } catch (error) {
+    res.status(500).json({message: 'Internal server error'});
+  }
+});
