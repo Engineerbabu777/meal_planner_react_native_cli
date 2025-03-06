@@ -58,3 +58,27 @@ app.get('/menu/all', async (req, res) => {
     res.status(500).json({error: 'Internal server error'});
   }
 });
+
+app.post('/copyItems', async (req, res) => {
+  try {
+    const {prevDate, nextDate} = req.body;
+
+    const prevMenu = await Menu.findOne({date: prevDate});
+    if (!prevMenu) {
+      return res.status(500).json({message: 'Previous date not found'});
+    }
+
+    let nextMenu = await Menu.findOne({date: nextDate});
+    if (!nextMenu) {
+      nextMenu = new Menu({date: nextDate, items: prevMenu.items});
+    } else {
+      nextMenu.items = prevMenu.items;
+    }
+
+    await nextMenu.save();
+
+    res.status(200).json({message: 'items copied'});
+  } catch (error) {
+    res.status(500).json({message: 'Internal server error'});
+  }
+});
