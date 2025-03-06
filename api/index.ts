@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import {Menu, IMenu} from './models/menu.model';
+import {IMenu, Menu} from './models/menu.model';
 
 dotenv.config();
 
@@ -15,7 +15,9 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 mongoose
-  .connect(process.env.MONGO_URI as string)
+  .connect(
+    'mongodb+srv://awaismumtaz0099:778677867786a..@cluster0.3so1bcq.mongodb.net/meal_planner',
+  )
   .then(() => {
     console.log('Connected to MongoDB');
   })

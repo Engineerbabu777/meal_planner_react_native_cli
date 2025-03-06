@@ -5,6 +5,7 @@ import {
   ScrollView,
   Pressable,
   Alert,
+  BackHandler,
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import moment from 'moment';
@@ -13,7 +14,6 @@ import axios from 'axios';
 import {BottomModal} from 'react-native-modals';
 import {SlideAnimation} from 'react-native-modals';
 import {ModalContent} from 'react-native-modals';
-import { HOST_IP } from '../secrets';
 
 const HomeScreen = () => {
   const currentDate = moment();
@@ -23,8 +23,10 @@ const HomeScreen = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const navigation = useNavigation();
   const [menuData, setMenuData] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
+  // const [modalVisible, setModalVisible] = useState(false);
   const [modal, setModal] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   const openModal = date => {
     setDate(date.format('ddd') + ' ' + date.format('DD'));
@@ -35,7 +37,7 @@ const HomeScreen = () => {
 
   const fetchAllMenuData = async () => {
     try {
-      const response = await axios.get(`http://${HOST_IP}:3000/menu/all`);
+      const response = await axios.get('http://localhost:3000/menu/all');
       setMenuData(response.data);
     } catch (error) {
       console.log('Error', error);
@@ -46,7 +48,7 @@ const HomeScreen = () => {
     try {
       const dateToDelete = selectedDate;
       const response = await axios.delete(
-        `http://${HOST_IP}:3000/deleteItems/${dateToDelete}`,
+        `http://localhost:3000/deleteItems/${dateToDelete}`,
       );
 
       if (response.status == 200) {
@@ -63,14 +65,16 @@ const HomeScreen = () => {
   const copyItems = async () => {
     const formattedPrevDate = date;
     const formattedNextDate = nextDate;
-    const response = await axios.post(`http://${HOST_IP}:3000/copyItems`, {
+    const response = await axios.post('http://localhost:3000/copyItems', {
       prevDate: formattedPrevDate,
       nextDate: formattedNextDate,
     });
 
-    setModalVisible(false);
+    navigation.navigate('Home');
 
-    if (response.status == 200) {
+    // setModalVisible(false);
+
+    if (response.status === 200) {
       fetchAllMenuData();
       Alert.alert('Success', 'Items copied');
     } else {
@@ -80,6 +84,7 @@ const HomeScreen = () => {
 
   const deleteItems = date => {
     setModal(!modal);
+    setDeleteModalVisible(true)
     setSelectedDate(date.format('ddd') + ' ' + date.format('DD'));
   };
 
@@ -92,6 +97,24 @@ const HomeScreen = () => {
       fetchAllMenuData();
     }, []),
   );
+
+  // Handle hardware back button
+  useEffect(() => {
+    const backAction = () => {
+      if (modalVisible) {
+        setModalVisible(false);
+        return true; // Prevent default behavior
+      } else if (deleteModalVisible) {
+        setDeleteModalVisible(false);
+        return true; // Prevent default behavior
+      }
+      return false; // Default behavior (exit app)
+    };
+
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    return () => backHandler.remove(); // Clean up listener
+  }, [modalVisible, deleteModalVisible]);
 
   console.log('Menu', menuData);
 
@@ -478,17 +501,13 @@ const HomeScreen = () => {
       </BottomModal>
 
       <BottomModal
-        onBackdropPress={() => setModal(!modal)}
-        swipeDirection={['up', 'down']}
+        visible={deleteModalVisible}
+        onTouchOutside={() => setDeleteModalVisible(false)}
+        onBackdropPress={() => setDeleteModalVisible(false)}
+        swipeDirection={["up", "down"]}
         swipeThreshold={200}
-        modalAnimation={
-          new SlideAnimation({
-            slideFrom: 'bottom',
-          })
-        }
-        onHardwareBackPress={() => setModal(!modal)}
-        visible={modal}
-        onTouchOutside={() => setModal(!modal)}>
+        modalAnimation={new SlideAnimation({ slideFrom: "bottom" })}
+       >
         <ModalContent style={{width: '100%', height: 280}}>
           <Text style={{fontSize: 16, fontWeight: '500', textAlign: 'center'}}>
             Delete Menu

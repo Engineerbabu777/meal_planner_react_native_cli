@@ -9,7 +9,7 @@ import {
 import React, {useEffect, useState} from 'react';
 import {useRoute} from '@react-navigation/native';
 import axios from 'axios';
-import { HOST_IP } from '../secrets';
+import {HOST_IP} from '../secrets';
 
 const MenuScreen = () => {
   const route = useRoute();
@@ -19,10 +19,10 @@ const MenuScreen = () => {
   const [menuItems, setMenuItems] = useState([]);
 
   useEffect(() => {
-    if(route?.params?.items){
-      setMenuItems(route?.params?.items)
+    if (route?.params?.items) {
+      setMenuItems(route?.params?.items);
     }
-  },[route?.params?.items])
+  }, [route?.params?.items]);
 
   const addDishToMenu = async () => {
     setItem('');
@@ -37,13 +37,12 @@ const MenuScreen = () => {
       `http://${HOST_IP}:3000/menu/addDish`,
       dish,
     );
-    console.log("dish added",response)
+    console.log('dish added', response);
 
+    const updatedMenuItems = [...menuItems, dish];
+    setMenuItems(updatedMenuItems);
 
-    const updatedMenuItems = [...menuItems,dish];
-    setMenuItems(updatedMenuItems)
-
-    console.log("dish added",response)
+    console.log('dish added', response);
   };
   return (
     <SafeAreaView>
